@@ -1,0 +1,108 @@
+\documentclass[12]{article}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{tikz}
+\usepackage{amsmath, amsthm, amssymb}
+\usetikzlibrary{positioning,shapes,shadows,arrows}
+
+\title{Binomial Uncertainty}
+\author{Brett Jackson}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+Here, I derive the uncertainty on a binomial distribution.
+
+\section{Derivation}
+
+Suppose we start with a variable which is described by the binomial distribution.
+\begin{equation}
+  \label{eqn:binom_prob}
+  P = \frac{m!}{N!\left(N-m\right)!} \cdot \epsilon^{m}\left(1-\epsilon\right)^{N-m}
+\end{equation}
+where $N$ is the total number of trials, $m$ is the number of trials which pass the test, and $\epsilon$ is the true probability of an event passing the test.
+Let us start by finding the best estimate of $\epsilon$ given ourt measured $m$ and sample size $N$.
+We do this by first taking the log of Eqn~\ref{eqn:binom_prob}.
+\begin{subequations}
+  \begin{align}
+    \log \, P
+    & = \log \left(\frac{m!}{N!\left(N-m\right)!} \cdot \epsilon^{m}\left(1-\epsilon\right)^{N-m} \right) \\
+    & = \underbrace{ \log \left(\frac{m!}{N!\left(N-m\right)!} \right) }_{\mathrm{Independant~ of~ } \epsilon}
+      + m \cdot \log \left( \epsilon \right)
+      + \left(N-m\right) \cdot \log \left( 1-\epsilon \right)
+      \label{eqn:expanded_log}
+  \end{align}
+\end{subequations}
+
+Next, to find the most likely value of $\epsilon$, we take the derivative of Eqn~\ref{eqn:expanded_log}
+\begin{subequations}
+  \begin{align}
+    \frac{\partial}{\partial \epsilon} \left[ \log \, P \right]
+    & = \frac{m}{\epsilon} - \frac{N-m}{1-\epsilon} \\
+    & = \frac{m - m\epsilon - N\epsilon + m\epsilon}{\epsilon\left(1-\epsilon\right)} \\
+    & = \frac{m - N\epsilon}{\epsilon\left(1-\epsilon\right)}
+        \label{eqn:derivative_log}
+  \end{align}
+\end{subequations}
+
+Find the best estimate of $\epsilon$ by setting $\frac{\partial}{\partial \epsilon} \left[ \log \, P \right] \, = \, 0$, then solving for $\epsilon$.
+\begin{equation}
+  \frac{\partial}{\partial \epsilon} \left[ \log \, P \right] \Bigr\rvert_{\epsilon = \hat{\epsilon}}
+    = 0
+\end{equation}
+\begin{subequations}
+  \begin{align}
+    \frac{m - N\hat{\epsilon}}{\hat{\epsilon}\left(1-\hat{\epsilon}\right)} & = 0 \\
+    N\hat{\epsilon} & = m \\
+  \end{align}
+\end{subequations}
+\begin{equation}
+  \boxed{
+  \hat{\epsilon} = \frac{m}{N}
+  }
+\end{equation}
+
+We are almost there! We know the variance of a test statistic $m$, which is distributed according to the Binomial distribution is given by
+\begin{equation}
+    V\left[m\right] = \sigma^2\left[m\right] = N\epsilon\left(1-\epsilon\right)
+\end{equation}
+
+Using this, we can find the variance of $\hat{\epsilon}$.
+\begin{subequations}
+  \begin{align}
+    V \left[ \hat{\epsilon} \right]
+    & = V\left[\frac{m}{N}\right] \\
+    & = \frac{1}{N^2} V\left[m\right] \\
+    & = \frac{1}{N^2} N\epsilon\left(1-\epsilon\right) \\
+    & = \frac{\epsilon\left(1-\epsilon\right)}{N}
+  \end{align}
+\end{subequations}
+
+Now, we can plug in our best estimate of $\epsilon$ to find the best estimate of the variance of $\epsilon$.
+\begin{subequations}
+  \begin{align}
+    \hat{V} \left[ \hat{\epsilon} \right]
+    & = \frac{\epsilon\left(1-\epsilon\right)}{N} \\
+    & = \frac{\frac{m}{N}\left(1-\frac{m}{N}\right)}{N} \\
+    % & = \frac{m\left(1-\frac{m}{N}\right)}{N^2} \\
+    & = \frac{m}{N^2}\left(1 - \frac{m}{N}\right) \\
+    & = \frac{m^2}{N^2}\left(\frac{1}{m}-\frac{1}{N}\right) \\
+  \end{align}
+\end{subequations}
+
+So, we see the variance and the standard deviation on the measured value of $\hat{\epsilon}$ are given by
+\begin{equation}
+  \boxed{
+    \hat{V}\left[ \hat{\epsilon} \right]
+    = \frac{m^2}{N^2}\left(\frac{1}{m}-\frac{1}{N}\right)
+  }
+\end{equation}
+\begin{equation}
+  \boxed{
+    \hat{\sigma}\left[ \hat{\epsilon} \right]
+    % = \frac{m}{N}\left(\frac{1}{m}-\frac{1}{N}\right)^{1/2}
+    = \frac{m}{N}\sqrt{ \frac{1}{m}-\frac{1}{N} }
+  }
+\end{equation}
+
+\end{document}

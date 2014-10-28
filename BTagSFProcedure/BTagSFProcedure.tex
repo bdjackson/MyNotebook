@@ -24,11 +24,11 @@ m_b_tag_calibration->BTagCalibrationFunction( pt_list
 \end{lstlisting}
 
 \begin{itemize}
-\item pt\_list: std::vector<float> of the $p_T$ values of each of our jets
-\item eta\_list: std::vector<float> of the $\eta$ values of each of our jets
-\item mv1\_list: std::vector<float> of the MV1 values of each of our jets
-\item pdgid\_list: std::vector<int> of the flavor for each of our jets
-\item is\_sherpa: boolian to tell the tool if this is a Sherpa sample
+  \item pt\_list: \texttt{std::vector<float>} of the $p_T$ values of each of our jets
+  \item eta\_list: \texttt{std::vector<float>} of the $\eta$ values of each of our jets
+  \item mv1\_list: \texttt{std::vector<float>} of the MV1 values of each of our jets
+  \item pdgid\_list: \texttt{std::vector<int>} of the flavor for each of our jets
+  \item is\_sherpa: boolian to tell the tool if this is a Sherpa sample
 \end{itemize}
 
 It should be noted that all the jets which could possibly be tagged as a b-tagged jet are considered here, not just the jets that are flagged as b-tagged jets 

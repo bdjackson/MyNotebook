@@ -1,0 +1,123 @@
+\documentclass[11pt,a4paper]{article}
+
+% \graphicspath{{figures/}}
+\usepackage{subfigure}
+\usepackage{mathrsfs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{slashed}
+\usepackage{xspace}
+\usepackage{lscape}
+\usepackage{rotating}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{dcolumn}
+\usepackage{epstopdf}
+\usepackage{enumerate}
+\usepackage[section]{placeins}
+\usepackage{multicol}
+\usepackage{color}
+\hypersetup{
+colorlinks=true,
+linkcolor=red,
+citecolor=red,
+urlcolor=blue
+}
+\renewcommand{\topfraction}{0.99}
+\renewcommand{\bottomfraction}{0.99}
+
+%\newcommand{\N1}{$\chi_{1}^{0}$ }
+\newcommand{\LSP}{$\widetilde{\chi}_{1}^{0}$ }
+\newcommand{\CI}{$\widetilde{\chi}_{1}^{\pm}$ }
+
+% Title and author
+\title{Matrix Method}
+\author{Brett Jackson}
+% \author[1]{Brett Jackson}
+% \affil[1]{\it University of Pennsylvania, USA}
+
+\begin{document}
+  \maketitle
+
+  We will start with the real efficiency and fake rate definitions:
+  \[
+    \begin{array}{cc}
+      r = \frac{N_{R}^{t}}{N_{R}^{l}} &
+      f = \frac{N_{F}^{t}}{N_{F}^{l}}
+    \end{array}
+  \]
+  These give the rate at which a real or lepton that has already passed the
+  loose selection is identified as a tight lepton.
+
+  We can construct the following matrix equation.
+  \[
+    \left(
+      \begin{array}{c}
+        N_T \\
+        N_L \\
+      \end{array}
+    \right)
+    =
+    \left(
+      \begin{array}{cc}
+        r & f \\
+        1-r & 1-f \\
+      \end{array}
+    \right)
+    \left(
+      \begin{array}{c}
+        N_{R}^{l} \\
+        N_{F}^{l} \\
+      \end{array}
+    \right)
+  \]
+  This gives the number of events passing the tihgt and loose lepton definitions
+  given a sample with $N_{R}^{l}$ real leptons and $N_{F}^{l}$ fake leptons.
+  
+  We want to get the number of real and fake events given some number of tight
+  and loose events, so we invert this matrix, giving:
+  \[
+    \left(
+      \begin{array}{c}
+        N_{R}^{l} \\
+        N_{F}^{l} \\
+      \end{array}
+    \right)
+    =
+    \frac{1}{r-f}
+    \left(
+      \begin{array}{cc}
+        1-f & -f \\
+        -(1-r) & r \\
+      \end{array}
+    \right)
+    \left(
+      \begin{array}{c}
+        N_T \\
+        N_L \\
+      \end{array}
+    \right)
+  \]
+
+  If we do the matrix multiplication, we get
+  \[
+    N_{R}^{l} = \frac{1}{r-f}\left( (1-f)N_T - fN_L \right)
+  \]
+  \[
+    N_{F}^{l} = \frac{1}{r-f}\left( -(1-r)N_T + rN_L \right)
+  \]
+
+  But, wait!  This gives us the number of real and fake events assuming we are
+  looking at a loose signal sample.  We need to change basis to the tight signal
+  sample.  To do this, we go back to the definition of the $r$ and $f$ rates.  
+
+  Converting to the basis of tight leptons, we get:
+  \[
+    N_{R}^{t} = r\frac{1}{r-f}\left( (1-f)N_T - fN_L \right)
+  \]
+  \[
+    N_{F}^{t} = f\frac{1}{r-f}\left( -(1-r)N_T + rN_L \right)
+  \]
+
+\end{document}  

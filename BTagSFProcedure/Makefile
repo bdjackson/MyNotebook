@@ -3,7 +3,6 @@ BASENAME = BTagSFProcedure
 default: pdflatex
 
 pdflatex:
-	echo ${BASENAME}
 	pdflatex ${BASENAME}
 
 clean:

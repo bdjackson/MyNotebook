@@ -3,7 +3,6 @@ BASENAME = BinomialUncertainty
 default: pdflatex
 
 pdflatex:
-	echo ${BASENAME}
 	pdflatex ${BASENAME}
 	pdflatex ${BASENAME}
 

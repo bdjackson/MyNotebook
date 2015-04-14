@@ -4,7 +4,7 @@ This is mostly a refresher, but I want to make sure I'm not missing some basic
 syntax.
 
 
-        import numpy as np
+    import numpy as np
 
 ## Testing basic commands
 
@@ -1006,6 +1006,588 @@ An array can be split into n equal sub-arrays or split at particular divisors
 
 
 ## Columns and views
+
+
+    a = np.arange(12)
+    a
+
+
+
+
+    array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11])
+
+
+
+Simple assignment does not create a copy.
+
+
+    b = a
+    b is a
+
+
+
+
+    True
+
+
+
+
+    b.resize((3,4))
+    a
+
+
+
+
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11]])
+
+
+
+This is because Python passes mutable objects as references, so no copy is made
+
+
+    def f(x):
+        print id(x)
+    
+    print id(a)
+    f(a)
+
+    4379735664
+    4379735664
+
+
+### Shallow copy of an array
+This is done using the `view` function
+
+
+    c = a.view()
+    c is a
+
+
+
+
+    False
+
+
+
+However, the data is still owned by the original object (because it's a shallow
+copy)
+
+
+    c.base is a
+
+
+
+
+    True
+
+
+
+The shape of the view can be changed independent of the shape of the parent
+
+
+    c.shape = 2,6
+    a.shape
+
+
+
+
+    (3, 4)
+
+
+
+Modifying the data in the view modifies the data in the parent
+
+
+    c[0,4] = 1234
+    a
+
+
+
+
+    array([[   0,    1,    2,    3],
+           [1234,    5,    6,    7],
+           [   8,    9,   10,   11]])
+
+
+
+Slicing an array returns a view
+
+
+    s = a[:, 1:3]
+    s
+
+
+
+
+    array([[ 1,  2],
+           [ 5,  6],
+           [ 9, 10]])
+
+
+
+
+    s[:] = 10
+    s
+
+
+
+
+    array([[10, 10],
+           [10, 10],
+           [10, 10]])
+
+
+
+
+    a
+
+
+
+
+    array([[   0,   10,   10,    3],
+           [1234,   10,   10,    7],
+           [   8,   10,   10,   11]])
+
+
+
+### Deep copy
+A deep copy actually copies the data as well
+
+
+    d = a.copy()
+    d is a
+
+
+
+
+    False
+
+
+
+
+    d.base is a
+
+
+
+
+    False
+
+
+
+
+    d[0,0] = 9999
+    a
+
+
+
+
+    array([[   0,   10,   10,    3],
+           [1234,   10,   10,    7],
+           [   8,   10,   10,   11]])
+
+
+
+# Less basic NumPy feature
+
+## Broadcasting rules
+The broadcasting rules are defined to handle when arrays are not of the same
+size.
+If the arrays being operated on do not have the same shape, a one is prepended
+to the shape of the smaller array until the shapes do match.
+The data in the "added" dimensions are take to be copies of the existing array
+
+
+    a = np.arange(12).reshape(4,3) # larger array. shape = (4,3)
+    b = np.arange(3) + 1 # smaller array. shape = 3
+    print a
+    print b
+    a*b
+
+    [[ 0  1  2]
+     [ 3  4  5]
+     [ 6  7  8]
+     [ 9 10 11]]
+    [1 2 3]
+
+
+
+
+
+    array([[ 0,  2,  6],
+           [ 3,  8, 15],
+           [ 6, 14, 24],
+           [ 9, 20, 33]])
+
+
+
+`b` was repeated four times when performing the multipliction
+
+## Fancy indexing
+
+
+    # construct an array to work with
+    a = np.arange(12)**2
+    # indices we would like to access
+    i = np.array([1,1,3,8,5])
+
+
+    a
+
+
+
+
+    array([  0,   1,   4,   9,  16,  25,  36,  49,  64,  81, 100, 121])
+
+
+
+
+    a[i]
+
+
+
+
+    array([ 1,  1,  9, 64, 25])
+
+
+
+
+    j = np.array([[3,4], [5,6]])
+    a[j]
+
+
+
+
+    array([[ 9, 16],
+           [25, 36]])
+
+
+
+
+    a = np.arange(12).reshape(3,4)
+    a
+
+
+
+
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11]])
+
+
+
+An array can be sliced in multiple dimensions as well
+
+
+    i = np.array([[0,1], [1,2]])
+    j = np.array([[2,1], [3,3]])
+    a[i,j] # should reproduce [ [a[0,2], a[1,1]], [a[1,3], a[2,3]]]
+
+
+
+
+    array([[ 2,  5],
+           [ 7, 11]])
+
+
+
+
+    a[:,j]
+
+
+
+
+    array([[[ 2,  1],
+            [ 3,  3]],
+    
+           [[ 6,  5],
+            [ 7,  7]],
+    
+           [[10,  9],
+            [11, 11]]])
+
+
+
+We can put `i`,`j` into a sequence, and index using the new object.
+
+
+    l = i,j
+    a[l]
+
+
+
+
+    array([[ 2,  5],
+           [ 7, 11]])
+
+
+
+We can slice on a time-dependent series to pick out maxima
+
+
+    time = np.linspace(20, 14, 5)
+    data = np.sin(np.arange(20)).reshape(5,4)
+
+
+    time
+
+
+
+
+    array([ 20. ,  18.5,  17. ,  15.5,  14. ])
+
+
+
+
+    data
+
+
+
+
+    array([[ 0.        ,  0.84147098,  0.90929743,  0.14112001],
+           [-0.7568025 , -0.95892427, -0.2794155 ,  0.6569866 ],
+           [ 0.98935825,  0.41211849, -0.54402111, -0.99999021],
+           [-0.53657292,  0.42016704,  0.99060736,  0.65028784],
+           [-0.28790332, -0.96139749, -0.75098725,  0.14987721]])
+
+
+
+Find the indices corresponding to the maximum values in the data
+
+
+    # find the indices of the maximum values in each column
+    ind = data.argmax(axis=0)
+    ind
+
+
+
+
+    array([2, 0, 3, 1])
+
+
+
+
+    time_max = time[ind]
+    time_max
+
+
+
+
+    array([ 17. ,  20. ,  15.5,  18.5])
+
+
+
+
+    # get peak value for each column
+    data_max = data[ind, xrange(data.shape[1])]
+    data_max
+
+
+
+
+    array([ 0.98935825,  0.84147098,  0.99060736,  0.6569866 ])
+
+
+
+
+    data_max == data.max(axis=0)
+
+
+
+
+    array([ True,  True,  True,  True], dtype=bool)
+
+
+
+
+    all(data_max == data.max(axis=0))
+
+
+
+
+    True
+
+
+
+### Indexing with booleans
+
+
+    a = np.arange(12).reshape(3,4)
+    b = a > 4
+    b
+
+
+
+
+    array([[False, False, False, False],
+           [False,  True,  True,  True],
+           [ True,  True,  True,  True]], dtype=bool)
+
+
+
+
+    a[b]
+
+
+
+
+    array([ 5,  6,  7,  8,  9, 10, 11])
+
+
+
+This returned a 1D array with the values passing the selection array `b`
+
+
+    a[b] = 0
+    a
+
+
+
+
+    array([[0, 1, 2, 3],
+           [4, 0, 0, 0],
+           [0, 0, 0, 0]])
+
+
+
+## Linear algebra
+There are many useful linear algebra functions in the `numpy.linalg` package
+
+
+    a = np.array([[1,2], [3,4]])
+    a
+
+
+
+
+    array([[1, 2],
+           [3, 4]])
+
+
+
+The transpose of an array/vector
+
+
+    a.transpose()
+
+
+
+
+    array([[1, 3],
+           [2, 4]])
+
+
+
+The inverse of a matrix
+
+
+    np.linalg.inv(a)
+
+
+
+
+    array([[-2. ,  1. ],
+           [ 1.5, -0.5]])
+
+
+
+The identity matrix is created using `numpy.eye(n)`, where `eye` stands for "I,"
+and `n` is the dimension of the identity matrix
+
+
+    u = np.eye(2)
+    u
+
+
+
+
+    array([[ 1.,  0.],
+           [ 0.,  1.]])
+
+
+
+
+    j = np.array([[0, -1], [1, 0]])
+    j
+
+
+
+
+    array([[ 0, -1],
+           [ 1,  0]])
+
+
+
+The dot product can be taken using `numpy.dot()`
+
+
+    np.dot(j,j)
+
+
+
+
+    array([[-1,  0],
+           [ 0, -1]])
+
+
+
+The trace
+
+
+    np.trace(u)
+
+
+
+
+    2.0
+
+
+
+
+    y = np.array([[5.], [7.]])
+    y
+
+
+
+
+    array([[ 5.],
+           [ 7.]])
+
+
+
+To solve the linear equations:
+
+a[0,0] + a[0,1]*x = y0
+
+a[1,0] + a[1,1]*x = y1
+
+This solves for the vector `x`
+
+
+    np.linalg.solve(a, y)
+
+
+
+
+    array([[-3.],
+           [ 4.]])
+
+
+
+To find the eigenvalues/vectors
+
+
+    np.linalg.eig(j)
+
+
+
+
+    (array([ 0.+1.j,  0.-1.j]),
+     array([[ 0.70710678+0.j        ,  0.70710678-0.j        ],
+            [ 0.00000000-0.70710678j,  0.00000000+0.70710678j]]))
+
+
 
 
     

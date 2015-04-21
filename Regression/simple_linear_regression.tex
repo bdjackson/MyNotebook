@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath}
+
+\title{Simple Linear Regression}
+\author{Brett Jackson}
+
+\begin{document}
+\maketitle
+This document works through an example of simple linear regression.
+The regression here is a least squares minimization of a polynomial function,
+with two parameters
+\begin{equation}
+  y = \alpha + \beta x.
+\end{equation}
+In order to find estimators for $\alpha$ and $\beta$, we will minimize the
+squared error function
+\begin{equation}
+  \begin{split}
+    s & = \sum_{i=1}^{N} (y_i - y(x_i))^{2} \\
+      & = \sum_{i=1}^{N} (y_i - \alpha - \beta x_i)^{2}.
+  \end{split}
+\end{equation}
+
+First, find $\hat{\alpha}$.
+\begin{equation}
+\begin{split}
+  \frac{\partial s}{\partial \alpha}
+    & = -2\sum_{i=1}^{N} (y_i - \alpha - \beta x_i) \\
+  0 & = \sum_{i=1}^{N} y_i 
+      - \sum_{i=1}^{N} \hat{\alpha}
+      - \sum_{i=1}^{N} \beta x_i \\
+  0 & = N\bar{y}
+      - N\hat{\alpha}
+      - N\beta\bar{x} \\
+  \hat{\alpha} & = \bar{y}
+                 - \beta \bar{x} \\
+\end{split}
+\end{equation}
+
+Plugging $\hat{\alpha}$ into $s$:
+\begin{equation}
+\begin{split}
+  s & = \sum_{i=1}^{N} (y_i - \bar{y} + \beta \bar{x} - \beta x_i)^{2} \\
+    & = \sum_{i=1}^{N} (y_i - \bar{y} - \beta (x_i - \bar{x}) )^{2}
+\end{split}
+\end{equation}
+
+Solving for $\hat{\beta}$:
+\begin{equation}
+\begin{split}
+  \frac{\partial s}{\partial \beta}
+    & = -2 \sum_{i=1}^{N}
+        (x_i - \bar{x}) (y_i - \bar{y} - \beta (x_i - \bar{x}) ) \\
+%%
+  0 & = \sum_{i=1}^{N} (x_i - \bar{x})(y_i - \bar{y})
+      - \hat{\beta} \sum_{i=1}^{N} (x_i - \bar{x})^{2} \\
+%%
+  \hat{\beta}
+    & = \frac{\sum_{i=1}^{N} (x_i - \bar{x})(y_i - \bar{y})}
+             {\sum_{i=1}^{N} (x_i - \bar{x})^{2}} \\
+%%
+  \hat{\beta} & = \frac{\mathrm{cov}[x,y]}{\mathrm{var}[x]} \\
+%%
+  \hat{\beta} & = \mathrm{cor}[x,y] \frac{\sigma_y}{\sigma_x}
+\end{split}
+\end{equation}
+
+Now, we can plug this back into $\hat{\alpha}$
+\begin{equation}
+  \hat{\alpha} = \bar{y}
+               - \mathrm{cor}[x,y] \frac{\sigma_y}{\sigma_x} \bar{x}
+\end{equation}
+
+\end{document}

@@ -29,4 +29,3 @@ if __name__ == '__main__':
         test_queue.enqueue(i)
     while not test_queue.is_empty():
         print test_queue.dequeue()
-
